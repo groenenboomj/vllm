@@ -206,6 +206,7 @@ if TYPE_CHECKING:
     VLLM_NCCL_INCLUDE_PATH: Optional[str] = None
     VLLM_USE_FBGEMM: bool = False
     VLLM_GC_DEBUG: str = ""
+    VLLM_TORCH_COMPILE_DEBUG: bool = False
 
 
 def get_default_cache_root():
@@ -1362,6 +1363,12 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # - VLLM_GC_DEBUG='{"top_objects":5}': enable GC debugger with
     #                                      top 5 collected objects
     "VLLM_GC_DEBUG": lambda: os.getenv("VLLM_GC_DEBUG", ""),
+
+    # Torch compile debug
+    # - VLLM_TORCH_COMPILE_DEBUG=0: disable Torch Compile debugging
+    # - VLLM_TORCH_COMPILE_DEBUG=1: enable Torch Compile debugger via logging changes to
+    #                               CUDA graph and dynamic shape changes
+    "VLLM_TORCH_COMPILE_DEBUG": lambda: bool(int(os.getenv("VLLM_TORCH_COMPILE_DEBUG", "0"))),
 }
 
 # --8<-- [end:env-vars-definition]
