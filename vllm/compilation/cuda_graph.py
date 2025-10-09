@@ -61,8 +61,7 @@ class CUDAGraphWrapper:
     assumption on the dynamic shape (batch size) of the runtime inputs, as a
     trade-off for staying orthogonal to compilation logic. Nevertheless,
     tracing and checking the input addresses to be consistent during replay is
-    guaranteed when VLLM_LOGGING_LEVEL == "DEBUG" or by setting 
-    VLLM_TORCH_COMPILE_DEBUG == TRUE.
+    guaranteed when VLLM_TORCH_COMPILE_DEBUG == TRUE.
     """
 
     def __init__(
@@ -78,7 +77,6 @@ class CUDAGraphWrapper:
         self.compilation_config = vllm_config.compilation_config
 
         self.first_run_finished = False
-        self.is_debugging_mode = envs.VLLM_LOGGING_LEVEL == "DEBUG" or envs.VLLM_TORCH_COMPILE_DEBUG
 
         # assert runtime_mode is not NONE(no cudagraph), otherwise, we don't
         # need to initialize a CUDAGraphWrapper.
@@ -193,7 +191,7 @@ class CUDAGraphWrapper:
             # manage the memory during cuda graph capture
             return output
 
-        if self.is_debugging_mode:
+        if envs.VLLM_TORCH_COMPILE_DEBUG:
             # check if the input addresses are the same
             new_input_addresses = [
                 x.data_ptr() for x in args if isinstance(x, torch.Tensor)
